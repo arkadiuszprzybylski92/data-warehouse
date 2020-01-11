@@ -6,8 +6,8 @@ const fetch = require('node-fetch');
 //get all weather objects
 router.get('/', async (req, res) => {
     try {
-        const posts = await Weather.find();
-        res.json(posts);
+        const weather = await Weather.find();
+        res.json(weather);
     } catch (error) {
         res.json({message: error})
     }
