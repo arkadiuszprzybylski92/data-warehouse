@@ -3,6 +3,20 @@ const router = express.Router();
 const Weather = require('../models/Weather');
 const fetch = require('node-fetch');
 
+const transformData = item => {
+    return {
+        city: item.name,
+        lon: item.coord.lon,
+        lat: item.coord.lat,
+        country: item.sys.country,
+        clouds: item.weather[0].description,
+        temp: (item.main.temp - 273.15).toFixed(2),
+        visibility: item.visibility,
+        wind: item.wind.speed,
+        id: item.id
+    }
+};
+
 //get all weather objects
 router.get('/', async (req, res) => {
     try {
@@ -21,12 +35,37 @@ router.post('/', (req, res) => {
     fetch(apiUrl)
         .then(res => res.json())
         .then(async data => {
-            const weather = new Weather(data);
-            try {
-                const savedWeather = await weather.save(weather);
-                res.json(savedWeather);
-            } catch (error) {
-                res.json({message: error});
+
+            //error
+            if (data.cod !== 200) {
+                res.json({error: true, message: data.message});
+            } else {
+                Weather.find({id: data.id}, async function (err,array) {
+
+                    if (array.length) {
+                        //update
+                        try {
+                            await Weather.updateOne(
+                                {id: data.id},
+                                {$set: transformData(data)}
+                            );
+
+                            res.json({message: `item (${data.name}) was updated in database`});
+                        } catch (error) {
+                            res.json({message: error});
+                        }
+                    } else {
+                        //add new item
+                        const weather = new Weather(transformData(data));
+
+                        try {
+                            await weather.save(weather);
+                            res.json({message: `new item (${data.name}) was added to database`});
+                        } catch (error) {
+                            res.json({message: error});
+                        }
+                    }
+                });
             }
         })
         .catch(err => {

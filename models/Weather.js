@@ -1,20 +1,28 @@
 const mongoose = require('mongoose');
 
 const WeatherSchema = mongoose.Schema({
-    coord: {
-        type: Object,
-        required: true
-    },
-    weather: {
-        type: Array,
-        required: true
-    },
-    base: {
+    city: {
         type: String,
         required: true
     },
-    main: {
-        type: Object,
+    lon: {
+        type: Number,
+        required: true
+    },
+    lat: {
+        type: Number,
+        required: true
+    },
+    country: {
+        type: String,
+        required: true
+    },
+    clouds: {
+        type: String,
+        required: true
+    },
+    temp: {
+        type: Number,
         required: true
     },
     visibility: {
@@ -22,34 +30,10 @@ const WeatherSchema = mongoose.Schema({
         required: true
     },
     wind: {
-        type: Object,
-        required: true
-    },
-    clouds: {
-        type: Object,
-        required: true
-    },
-    dt: {
-        type: Number,
-        required: true
-    },
-    sys: {
-        type: Object,
-        required: true
-    },
-    timezone: {
         type: Number,
         required: true
     },
     id: {
-        type: Number,
-        required: true
-    },
-    name: {
-        type: String,
-        required: true
-    },
-    cod: {
         type: Number,
         required: true
     }
