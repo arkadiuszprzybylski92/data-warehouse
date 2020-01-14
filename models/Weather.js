@@ -19,7 +19,7 @@ const WeatherSchema = mongoose.Schema({
     },
     clouds: {
         type: String,
-        required: true
+        required: false
     },
     temp: {
         type: Number,
@@ -27,11 +27,11 @@ const WeatherSchema = mongoose.Schema({
     },
     visibility: {
         type: Number,
-        required: true
+        required: false
     },
     wind: {
         type: Number,
-        required: true
+        required: false
     },
     id: {
         type: Number,

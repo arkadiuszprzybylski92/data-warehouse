@@ -19,7 +19,8 @@ const transformData = item => {
 
 //get all weather objects
 router.get('/', async (req, res) => {
-    if (!req.query.city) {
+    if (Object.entries(req.query).length === 0) {
+        //get all data
         try {
             const weather = await Weather.find();
             res.json(weather);
@@ -27,22 +28,28 @@ router.get('/', async (req, res) => {
             res.json({message: error})
         }
     } else {
-        const cityParam = req.query.city;
-        const apiUrl = process.env.API_URL.replace('cityparam', cityParam);
+        if (req.query.city) {
+            //get not transformed data from weather API
+            const cityParam = req.query.city;
+            const apiUrl = process.env.API_URL.replace('cityparam', cityParam);
 
-        fetch(apiUrl)
-            .then(res => res.json())
-            .then(async data => {
-                //error
-                if (data.cod !== 200) {
-                    res.json({error: true, message: data.message});
-                } else {
-                    res.json(data);
-                }
-            })
-            .catch(err => {
-                res.json({message: err});
-            });
+            fetch(apiUrl)
+                .then(res => res.json())
+                .then(async data => {
+                    //error
+                    if (data.cod !== 200) {
+                        res.json({error: true, message: data.message});
+                    } else {
+                        res.json(data);
+                    }
+                })
+                .catch(err => {
+                    res.json({message: err});
+                });
+        } else if (req.query.object) {
+            //get transformed data for 1 city
+            res.json(transformData(JSON.parse(req.query.object).data));
+        }
     }
 });
 
@@ -92,7 +99,7 @@ router.post('/', (req, res) => {
         });
 });
 
-//delete weather object
+//reset database
 router.delete('/', async (req, res) => {
     try {
         const removedWeather = await Weather.remove({});
