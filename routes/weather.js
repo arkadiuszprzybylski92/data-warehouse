@@ -19,11 +19,30 @@ const transformData = item => {
 
 //get all weather objects
 router.get('/', async (req, res) => {
-    try {
-        const weather = await Weather.find();
-        res.json(weather);
-    } catch (error) {
-        res.json({message: error})
+    if (!req.query.city) {
+        try {
+            const weather = await Weather.find();
+            res.json(weather);
+        } catch (error) {
+            res.json({message: error})
+        }
+    } else {
+        const cityParam = req.query.city;
+        const apiUrl = process.env.API_URL.replace('cityparam', cityParam);
+
+        fetch(apiUrl)
+            .then(res => res.json())
+            .then(async data => {
+                //error
+                if (data.cod !== 200) {
+                    res.json({error: true, message: data.message});
+                } else {
+                    res.json(data);
+                }
+            })
+            .catch(err => {
+                res.json({message: err});
+            });
     }
 });
 
@@ -78,19 +97,6 @@ router.delete('/', async (req, res) => {
     try {
         const removedWeather = await Weather.remove({});
         res.json({message: removedWeather});
-    } catch (err) {
-        res.json({message: err});
-    }
-});
-
-//update weather object
-router.patch('/:weatherId', async (req, res) => {
-    try {
-        const updatedWeather = await Weather.updateOne(
-            {_id: req.params.weatherId},
-            {$set: {}}
-        );
-        res.json({message: updatedWeather});
     } catch (err) {
         res.json({message: err});
     }

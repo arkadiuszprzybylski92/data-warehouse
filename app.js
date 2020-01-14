@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
-var cors = require('cors')
+var cors = require('cors');
 require('dotenv/config');
 const bodyParser = require('body-parser');
 
@@ -18,7 +18,7 @@ app.use('/weather', weatherRoute);
 
 //Connect to DB
 mongoose.connect(process.env.DB_CONNECTION,
-    { useNewUrlParser: true },
+    { useNewUrlParser: true,useUnifiedTopology: true  },
     () => console.log('connected to DB')
 );
 
